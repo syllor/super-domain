@@ -1,0 +1,232 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>super-domain</title>
+<link href="http://fonts.googleapis.com/css?family=Fenix" rel="stylesheet" type="text/css"> 
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+<style>
+body, button, input, select, textarea{
+font:14px/24px 'Fenix',Arial,"Hiragino Sans GB","Microsoft YaHei","微软雅黑","STHeiti","WenQuanYi Micro Hei",SimSun,sans-serif
+}
+#num{background:#f3f3f3;padding:20px;text-align:center}
+#num .btn {text-align:right}
+.command{background:#E6E6E6;border-top:1px solid #fff;padding:20px}
+.command > div{margin-bottom:10px}
+.command button{margin-left:10px}
+.command input{margin:0px 10px}
+#result{ background:#eee}
+#result > div{
+    padding:5px 30px;
+    border-bottom:1px solid #eee;
+}
+#result .available{
+   background:rgb(28, 184, 65)!important 
+}
+#result .domain{
+    width:70%;
+    display:inline-block;
+}
+.all #result .taken{
+    display:block!important;
+}
+#result .taken{
+    display:none;
+}
+</style>
+<script src="js/en1.js"></script>
+<script src="http://lib.sinaapp.com/js/jquery/1.9.0/jquery.min.js"></script>
+</head>
+<body>
+<div id ="main" class="main all" style="margin:20px auto;width:700px">
+<div id="num" class="pure-g">
+    <div class="pure-u-1-3">
+        <p>unavailable</p>
+        <p id='taken'>0</p>
+    </div>
+
+    <div class="pure-u-1-3">
+        <p>available</p><p id='nottaken'>0</p>
+    </div>
+    <div class="btn pure-u-1-3">
+    <p>
+        <button id="showok" class="pure-button pure-button-primary">show available</button>
+    </p>
+    <p>
+        <button id="showall" class="pure-button pure-button-primary">show all</button>
+    </p>
+    <p>
+        <button id="stop" class="pure-button">stop</button>
+    </p>
+    </div>
+</div>
+<div class='command'>
+  <div id="section1">
+    <input class="txt" type="text" value=""/> <span>+1 letter 1 number+</span>
+    <input class="txt" type="text" value=""/><button class="start">search</button>
+  </div>
+  <div id="section2">
+    <input type="text" value=""/> <span>+2 letter 2 number+</span> <input
+    type="text" value=""/> <button class="start">search</button>
+  </div>
+  <div id="section3">
+    <input type="text" value=""/> <span>+lucky name like:51job 360buy+</span>
+    <input type="text" value=""/> <button class="start">search</button>
+  </div>
+  <div id="section4">
+    <input type="text" value=""/> <span>+Commonly used words+</span> <input
+    type="text" value=""/> <button class="start">search</button>
+  </div>
+
+
+</div>
+
+<div id='result'>
+
+</div>
+
+<script>
+var sd = {};
+sd.domaintype = ".com";
+sd.baseurl = "http://domai.nr/api/json/info?callback=callback&q=";
+sd.nottaken = 0;
+sd.taken = 0;
+sd.keeprequest = 1;
+sd.clear = function(){
+  sd.keeprequest = 1;
+  sd.taken = 0;
+  sd.nottaken = 0;
+   // sd.rq.abort(); dimn it....
+  $("#result").text("");
+}
+sd.getresult = function (keyword){
+var rq = $.ajax({
+    url:sd.baseurl+keyword,
+    dataType:"jsonp",
+    jsonp:"callback",
+    success:function(data){
+      if (sd.keeprequest == 0) return;
+      var item = $("<div></div>").addClass(data.availability);
+      var d = $("<span class='domain'></span>").text(data.domain)
+      var r = $("<span></span>").text(data.availability)
+      item.append(d).append(r);
+      //console.log(item);
+      $("#result").append(item);
+      if(data.availability=="taken"){
+        sd.taken += 1;
+        sd.takenbtn.text(sd.taken);
+      }else{
+        sd.nottaken+=1;
+        sd.nottakenbtn.text(sd.nottaken);
+      }
+      
+    }
+  });
+sd.rq =rq;
+}
+
+// command items
+
+var cha = ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m','1','2','3','4','5','6','7','8','9','0'];
+var cha2x = [];
+$(cha).each(function(i,x){
+  $(cha).each(function(j,y){
+    cha2x.push(x+y)
+  })
+})
+var luckynum = ['100','51','360','188','163','126','58','120','114','888','666','010','911']
+// the text2js.py can make a js array file like dict_en1=['air','act'], the array's name is like dict_en1 
+
+$(document).ready(function(){
+
+sd.takenbtn = $("#taken");
+sd.nottakenbtn = $("#nottaken");
+
+$("#showall").click(function(){
+  $("#main").addClass('all');
+})
+$("#showok").click(function(){
+  $("#main").removeClass('all');
+})
+
+$("#stop").click(function(){
+  sd.keeprequest = 0;
+})
+//addevent of sections 
+//section1
+$("#section1 button").click(function(){
+  sd.clear();
+  textl = $("#section1 input")[0].value;
+
+  textr = $("#section1 input")[1].value;
+
+  key = [];
+  $(cha).each(function(i,item){
+    key.push(textl+item+textr+sd.domaintype)
+  })
+  $(key).each(function(i,item){
+    sd.getresult(item)
+  })
+
+})
+
+//section2
+$("#section2 button").click(function(){
+  sd.clear();
+  textl = $("#section2 input")[0].value;
+
+  textr = $("#section2 input")[1].value;
+
+  key = [];
+  $(cha2x).each(function(i,item){
+    key.push(textl+item+textr+sd.domaintype)
+  })
+  $(key).each(function(i,item){
+    sd.getresult(item)
+  })
+
+})
+
+//section3
+$("#section3 button").click(function(){
+  sd.clear();
+  textl = $("#section3 input")[0].value;
+
+  textr = $("#section3 input")[1].value;
+
+  key = [];
+  $(luckynum).each(function(i,item){
+    key.push(textl+item+textr+sd.domaintype)
+  })
+  $(key).each(function(i,item){
+    sd.getresult(item)
+  })
+
+})
+
+//section4
+$("#section4 button").click(function(){
+  sd.clear();
+  textl = $("#section4 input")[0].value;
+
+  textr = $("#section4 input")[1].value;
+
+  key = [];
+  $(dict_en1).each(function(i,item){
+    key.push(textl+item+textr+sd.domaintype)
+  })
+  $(key).each(function(i,item){
+    sd.getresult(item)
+  })
+
+})
+
+
+
+
+});
+
+</script>
+</div>
+</body>
+</html>
