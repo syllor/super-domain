@@ -8,6 +8,8 @@ http://syllor.com/super-domain
 
 try to input your keywords, go.
 
+![result](http://syllor.com/super-domain/img.png)
+
 ##api
  
 the api is from on domai.nr. 
