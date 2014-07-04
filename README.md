@@ -12,15 +12,11 @@ try to input your keywords, go.
 
 ##api
  
-the api is from on domai.nr. 
-
-domai.nr provide a jsonp api ,so everyone can create web app anywhere with it.
+the api is provide by domai.nr. 
 
 if domai.nr block the api in future, i will provide a api on gae or my vps.
 
 ##tool
 
-this package can run with out server ,you can also download it from github
-
-there is a dictionary tool ,**text2js.py** under js/ folder ,you can support more words with it
+there is a script ,**text2js.py** under js/ folder ,you can support more words
 
